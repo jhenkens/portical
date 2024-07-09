@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import re
+import signal
 import subprocess
 import sys
 import time
@@ -303,7 +304,16 @@ def poll() -> None:
         log.debug(f"Sleeping for {duration} seconds...")
         time.sleep(duration)
 
+def handle_sigterm(signum, frame):
+    log.info("Received SIGTERM signal. Exiting...")
+    sys.exit(0)
 
+def handle_sigkill(signum, frame):
+    log.info("Received SIGKILL signal. Exiting...")
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, handle_sigterm)
+signal.signal(signal.SIGKILL, handle_sigkill)
 try:
     match command:
         case "update":
