@@ -5,6 +5,7 @@ duration=${PORTICAL_POLL_INTERVAL-15}
 label="portical.upnp.forward"
 verbose=false
 force=false
+spawn=${PORTICAL_SPAWN_UPNPC_CONTAINER}
 
 while (( "$#" )); do
   case $1 in
@@ -13,6 +14,7 @@ while (( "$#" )); do
     -l | --label) label="$2"; shift 2 ;;
     -v | --verbose) verbose=true; shift ;;
     -f | --force) force=true; shift ;;
+    -s | --spawn) spawn=true; shift ;;
     *) break ;;
   esac
 done
@@ -29,6 +31,17 @@ function run_cmd() {
     if [ $status -ne 0 ]; then
         echo "Error: Command '$*' failed with status $status"
         exit $status
+    fi
+}
+
+function run_upnpc(){
+    upnpc_command=(upnpc ${root:+-u "$root"})
+    upnpc_command+=("$@")
+    if $spawn; then
+        run_cmd docker run --rm --network ${network} danielbodart/portical \
+            "${upnpc_command[@]}"
+    else
+        run_cmd "${upnpc_command[@]}"
     fi
 }
 
@@ -62,16 +75,13 @@ function forward() {
     return
   else
       echo -n "Removing existing rule... "
-      run_cmd docker run --rm --network ${network} danielbodart/portical \
-        upnpc ${root:+-u "$root"} -d "${external_port}" "${protocol}"
+      run_upnpc -d "${external_port}" "${protocol}"
       echo "DONE"
   fi
 
   echo -n "Adding new rule... "
-  run_cmd docker run --rm --network ${network} danielbodart/portical \
-    upnpc ${root:+-u "$root"} -e "${description}" -r "${internal_port}" "${external_port}" "${protocol}"
+  run_upnpc -e "${description}" -r "${internal_port}" "${external_port}" "${protocol}"
   echo "DONE"
-
 }
 
 

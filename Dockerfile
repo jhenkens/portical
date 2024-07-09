@@ -6,5 +6,7 @@ RUN apk update &&  \
 
 COPY run /opt/portical/
 
+ENV PORTICAL_SPAWN_UPNPC_CONTAINER=true
+
 ENTRYPOINT []
 CMD ["/opt/portical/run", "listen"]
