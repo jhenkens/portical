@@ -19,7 +19,7 @@ log.addHandler(logging.StreamHandler(sys.stdout))
 
 containers: List[str] = os.environ.get("PORTICAL_CONTAINERS", "").split(",")
 root: Optional[str] = os.environ.get("PORTICAL_UPNP_ROOT_URL")
-duration: int = int(os.environ.get("PORTICAL_POLL_INTERVAL", 1800))
+duration: int = int(os.environ.get("PORTICAL_POLL_INTERVAL", 15))
 rule_duration: int = int(os.environ.get("PORTICAL_RULE_DURATION", 3600))
 label: str = "portical.upnp.forward"
 verbose: bool = False
