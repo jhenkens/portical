@@ -1,12 +1,10 @@
-FROM docker:latest
+FROM python:3.11
 
-RUN apk update &&  \
-    apk upgrade &&  \
-    apk add miniupnpc bash
+WORKDIR /app
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
 
-COPY run /opt/portical/
+COPY run.py .
 
-ENV PORTICAL_SPAWN_UPNPC_CONTAINER=true
-
-ENTRYPOINT []
-CMD ["/opt/portical/run", "listen"]
+ENTRYPOINT ["python3", "run.py"]
+CMD ["poll"]
