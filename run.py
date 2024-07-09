@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import re
+import signal
 import subprocess
 import sys
 import time
@@ -303,6 +304,13 @@ def poll() -> None:
         log.debug(f"Sleeping for {duration} seconds...")
         time.sleep(duration)
 
+def handle_sig(signum: signal.Signals, frame):
+    log.info("Received %s signal. Exiting...", signum.name)
+    sys.exit(0)
+
+
+signal.signal(signal.SIGTERM, handle_sig)
+signal.signal(signal.SIGINT, handle_sig)
 
 try:
     match command:
