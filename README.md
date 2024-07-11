@@ -1,3 +1,16 @@
+## jhenkens Fork
+I used CoPilot to rewrite it using python... then further modified it to actually work in python (copilot can only do so much!). I'm sure it'd work in bash, but I just didn't want to use the dind pattern. 
+
+I haven't migrated some features (see note below), but the fork does not require read-write docker-socket permissions, only read. It doesn't perform the upnpc action via "forking" new docker containers that run upnpc, it uses python miniupnpc directly.
+
+I did some change to it to use TTL's so that the rules expire quickly if the container dies, but the container renews them automatically (requires a delete-add to refresh the TTL). It'd be easy to add a delete-before-stop hook to the sigterm handling.
+
+### Not implemented features:
+1. Docker event streaming - we poll so frequently, I'm not sure its necessary. It doesn't really work with the concept of the TTL's super well, because we'd still need to scan on startup to gather all the TTLs, and trust nothing else has changed, and trigger timer events to update them via TTL.
+2. MACVlan/IPVlan LAN IP discovery - wouldn't be too hard I don't think, I just don't use those and didn't need it for my WIP.
+3. Passing the UPnP connection url directly rather than discovery. Couldn't get this to work via upnpc or python-miniupnp.
+
+
 ![Portical Logo](logo.png)
 
 # Portical
